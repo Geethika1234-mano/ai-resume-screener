@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AI Resume Screener</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        h1 { color: #2F855A; }
+        form { margin-bottom: 2rem; }
+        .result { margin-top: 1rem; white-space: pre; background: #f0f0f0; padding: 1rem; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>AI Resume Screener</h1>
+    <p>Upload a resume to get a placeholder response from the API.</p>
+    <form id="uploadForm">
+        <label for="fileInput">Select resume:</label>
+        <input type="file" id="fileInput" name="resume" accept=".pdf,.doc,.docx" required>
+        <button type="submit">Upload</button>
+    </form>
+    <div id="result" class="result"></div>
+
+    <script>
+        // Handle resume upload on the demo frontend. This function submits the resume
+        // file to the backend's placeholder endpoint and displays the JSON response.
+        const form = document.getElementById('uploadForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            try {
+                // Send the file to the placeholder endpoint. In a real deployment,
+                // this would point at `/resumes/upload`, but the placeholder endpoint
+                // avoids requiring the python-multipart dependency.
+                const response = await fetch('http://127.0.0.1:8000/resumes/upload-placeholder', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('result').textContent = 'Error: ' + err;
+            }
+        });
+    </script>
+</body>
+</html>
